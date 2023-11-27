@@ -1,0 +1,27 @@
+name: 'Perform SAST scan'
+description: 'Perform a SAST scan on ScanCentral SAST'
+author: 'Fortify'
+runs:
+  using: composite
+  steps:
+    - uses: fortify/github-action/setup@__ACTION_VERSION__
+      with:
+        export-path: false
+        fcli: action-default
+    - uses: fortify/github-action/internal/sc-sast-login@__ACTION_VERSION__
+    - uses: fortify/github-action/package@__ACTION_VERSION__
+    - uses: fortify/github-action/internal/run@__ACTION_VERSION__
+      with:
+        cmd: '"${FCLI_CMD}" sc-sast scan start --publish-to "${SSC_APPVERSION}" -p package.zip -v "${SC_SAST_SENSOR_VERSION}" --store sc_sast_scan ${EXTRA_SC_SAST_SCAN_OPTS}'
+    - uses: fortify/github-action/internal/run@__ACTION_VERSION__
+      if: env.DO_WAIT == 'true' || env.DO_EXPORT == 'true'
+      with:
+        cmd: '"${FCLI_CMD}" sc-sast scan wait-for ::sc_sast_scan::'
+    - uses: fortify/github-action/internal/sc-sast-logout@__ACTION_VERSION__       
+    - if: env.DO_EXPORT == 'true'
+      uses: fortify/github-action/ssc-export@__ACTION_VERSION__
+        
+branding:
+  icon: 'shield'
+  color: 'blue'
+
