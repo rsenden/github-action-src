@@ -19,7 +19,7 @@ jobs:
         id: release_please
         uses: google-github-actions/release-please-action@v3
         with:
-          release-type: node
+          release-type: simple
           package-name: ${{ github.event.repository.name }}
           
       - name: Publish v{major}.{minor} tag
@@ -41,5 +41,7 @@ jobs:
       - name: Update release PR
         if: steps.release_please.outputs.pr
         run: |
-          echo "PR data: ${{ fromJSON(steps.release_please.outputs.pr).headBranchName }}"
+          git checkout "${{ fromJSON(steps.release_please.outputs.pr).headBranchName }}"
+          ./update-action-refs.sh "{cat version.txt}"
+          git diff
           
