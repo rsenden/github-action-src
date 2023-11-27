@@ -25,7 +25,7 @@ jobs:
           else
             actionVersion="${GITHUB_REF#refs/heads/}"
           fi
-          grep -rlZ __ACTION_VERSION__ . | xargs -0 sed -i -e "s/__ACTION_VERSION__/${actionVersion}/g"
+          grep -rlZ __ACTION_VERSION__ . | xargs -0 sed -i --debug -e "s/__ACTION_VERSION__/${actionVersion}/g"
           doc-resources/update-repo-docs.sh
           
           
