@@ -44,7 +44,6 @@ jobs:
           prBranch=${{ fromJSON(steps.release_please.outputs.pr).headBranchName }}
           git pull origin "${prBranch}"
           git checkout "${prBranch}"
-          ./update-action-refs.sh "{cat version.txt}"
-          echo "Done"
+          ./update-action-refs.sh "v$(cat version.txt)"
           git diff
           
