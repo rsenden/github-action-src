@@ -1,9 +1,9 @@
 on:
   push:
     branches: 
-      - main
+      - main   # New GitHub-favored name for default branch
       
-name: Build & Publish
+name: Publish release
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
@@ -11,16 +11,15 @@ jobs:
       - name: Check-out source code
         uses: actions/checkout@v2
       
-      - name: Prepare GitHub release
-        id: create_release
+      - name: Generate and process release PR
+        id: release_please
         uses: google-github-actions/release-please-action@v3
         with:
           release-type: node
-          command: github-release
           package-name: ${{ github.event.repository.name }}
           
       - name: Publish v{major}.{minor} tag
-        if: steps.create_release.outputs.release_created
+        if: steps.release_please.outputs.release_created
         uses: richardsimko/update-tag@v1
         with:
           tag_name: v${{steps.release_please.outputs.major}}.${{steps.release_please.outputs.minor}}
@@ -28,24 +27,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           
       - name: Publish v{major} tag
-        if: steps.create_release.outputs.release_created
+        if: steps.release_please.outputs.release_created
         uses: richardsimko/update-tag@v1
         with:
           tag_name: v${{steps.release_please.outputs.major}}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Prepare release PR
-        id: prepare_release
-        uses: google-github-actions/release-please-action@v3
-        with:
-          command: release-pr
-          release-type: node
-          package-name: ${{ github.event.repository.name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           
       - name: Update release PR
-        if: steps.prepare_release.outputs.release_created
+        if: steps.release_please.outputs.pr
         run: |
-          echo "${{steps.release_please.outputs.pr}}"
-          
+          echo "PR data: ${{steps.release_please.outputs.pr}}"
           
