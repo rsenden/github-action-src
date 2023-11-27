@@ -45,6 +45,6 @@ jobs:
           version=v$(cat version.txt)
           git pull origin "${prBranch}"
           git checkout "${prBranch}"
-          ./update-action-refs.sh "${version}"
+          ./update-action-refs.sh "${version}" || echo "Error"
           git diff
           
