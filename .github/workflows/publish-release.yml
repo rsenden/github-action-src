@@ -41,5 +41,5 @@ jobs:
       - name: Update release PR
         if: steps.release_please.outputs.pr
         run: |
-          echo "PR data: ${{steps.release_please.outputs.pr}}"
+          echo "PR data: ${{steps.release_please.outputs.pr.headBranchName}}"
           
