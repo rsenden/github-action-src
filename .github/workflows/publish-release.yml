@@ -41,7 +41,9 @@ jobs:
       - name: Update release PR
         if: steps.release_please.outputs.pr
         run: |
-          git checkout "${{ fromJSON(steps.release_please.outputs.pr).headBranchName }}"
+          prBranch=${{ fromJSON(steps.release_please.outputs.pr).headBranchName }}
+          git pull origin "${prBranch}"
+          git checkout "${prBranch}"
           ./update-action-refs.sh "{cat version.txt}"
           git diff
           
