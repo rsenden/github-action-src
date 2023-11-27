@@ -9,9 +9,15 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: fortify/github-action/fod-sast-scan@__ACTION_VERSION__
+    - uses: fortify/github-action/fod-sast-scan@main
+    - uses: fortify/github-action/fod-sast-scan@main
+    - uses: fortify/github-action/fod-sast-scan@main
+    - uses: fortify/github-action/fod-sast-scan@main
       if: inputs['sast-scan']=='true' && env.FOD_URL
-    - uses: fortify/github-action/sc-sast-scan@__ACTION_VERSION__
+    - uses: fortify/github-action/sc-sast-scan@main
+    - uses: fortify/github-action/sc-sast-scan@main
+    - uses: fortify/github-action/sc-sast-scan@main
+    - uses: fortify/github-action/sc-sast-scan@main
       if: inputs['sast-scan']=='true' && env.SSC_URL  
         
 branding:

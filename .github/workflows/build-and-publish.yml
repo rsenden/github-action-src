@@ -1,5 +1,7 @@
 on:
   push:
+    branches: 
+      - main
       
 name: Build & Publish
 jobs:
@@ -12,22 +14,10 @@ jobs:
       - name: Prepare GitHub release
         id: create_release
         uses: google-github-actions/release-please-action@v3
-        if: github.ref == 'refs/heads/main'
         with:
           release-type: node
           command: github-release
           package-name: ${{ github.event.repository.name }}
-          
-      - name: Build
-        run: |
-          if [ "${{steps.create_release.outputs.release_created}}" != "" ]; then
-            actionVersion=${{steps.create_prod_release.outputs.tag_name}}
-          else
-            actionVersion="${GITHUB_REF#refs/heads/}"
-          fi
-          grep -rlZ __ACTION_VERSION__ . | xargs -0 sed -i --debug -e "s/__ACTION_VERSION__/${actionVersion}/g"
-          doc-resources/update-repo-docs.sh
-          
           
       - name: Publish v{major}.{minor} tag
         if: steps.create_release.outputs.release_created
@@ -43,13 +33,19 @@ jobs:
         with:
           tag_name: v${{steps.release_please.outputs.major}}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Prepare release PR
+        id: prepare_release
         uses: google-github-actions/release-please-action@v3
-        if: github.ref == 'refs/heads/main'
         with:
           command: release-pr
           release-type: node
           package-name: ${{ github.event.repository.name }}
+          
+      - name: Update release PR
+        if: steps.prepare_release.outputs.release_created
+        run: |
+          echo "${{steps.release_please.outputs.pr}}"
+          
           
