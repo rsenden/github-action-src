@@ -3,6 +3,10 @@ on:
     branches: 
       - main   # New GitHub-favored name for default branch
       
+permissions:
+  contents: write
+  pull-requests: write
+      
 name: Publish release
 jobs:
   build-and-release:
